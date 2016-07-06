@@ -13,8 +13,8 @@ ExclusiveCoin uses libsecp256k1,
 Block Spacing: 60 Seconds
 Stake Minimum Age: 24 Hours
 
-Port: 17170
-RPC Port: 17171
+Port: 23230
+RPC Port: 23231
 
 
 BUILD LINUX
