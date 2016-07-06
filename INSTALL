@@ -1,0 +1,9 @@
+Building ExclusiveCoin
+
+See doc/readme-qt.rst for instructions on building ExclusiveCoin QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of ExclusiveCoin.
+
+See doc/build-*.txt for instructions on building exclusivecoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of ExclusiveCoin.
