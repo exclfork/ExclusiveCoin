@@ -2592,3 +2592,43 @@ Value scanforstealthtxns(const Array& params, bool fHelp)
 
     return result;
 }
+
+Value cclistcoins(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "cclistcoins\n"
+                        "CoinControl: list your spendable coins and their information\n");
+
+        Array result;
+
+        std::vector<COutput> vCoins;
+    pwalletMain->AvailableCoins(vCoins);
+
+        BOOST_FOREACH(const COutput& out, vCoins)
+    {
+                Object coutput;
+                int64_t nHeight = nBestHeight - out.nDepth;
+                CBlockIndex* pindex = FindBlockByHeight(nHeight);
+
+                CTxDestination outputAddress;
+                ExtractDestination(out.tx->vout[out.i].scriptPubKey, outputAddress);
+                coutput.push_back(Pair("Address", CBitcoinAddress(outputAddress).ToString()));
+                coutput.push_back(Pair("Output Hash", out.tx->GetHash().ToString()));
+                coutput.push_back(Pair("blockIndex", out.i));
+                double dAmount = double(out.tx->vout[out.i].nValue) / double(COIN);
+                coutput.push_back(Pair("Value", dAmount));
+                coutput.push_back(Pair("Confirmations", int(out.nDepth)));
+                double dAge = double(GetTime() - pindex->nTime);
+                coutput.push_back(Pair("Age (days)", (dAge/(60*60*24))));
+                uint64_t nWeight = 0;
+                pwalletMain->GetStakeWeightFromValue(out.tx->GetTxTime(), out.tx->vout[out.i].nValue, nWeight);
+                if(dAge < nStakeMinAge)
+                        nWeight = 0;
+                coutput.push_back(Pair("Weight", int(nWeight)));
+                double nReward = 1.00000000;
+                coutput.push_back(Pair("Potential Stake", nReward));
+                result.push_back(coutput);
+        }
+        return result;
+}
