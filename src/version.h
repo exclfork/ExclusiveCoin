@@ -29,8 +29,8 @@ static const int DATABASE_VERSION = 70509;
 //
 // network protocol versioning
 //
-
-static const int PROTOCOL_VERSION = 61402;
+// 61403 introduces updated net code which fixes several bugs/issues
+static const int PROTOCOL_VERSION = 61403;
 
 // intial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -39,7 +39,7 @@ static const int INIT_PROTO_VERSION = 209;
 static const int MIN_PEER_PROTO_VERSION = 61402;
 
 // minimum peer version accepted by DarkSendPool
-static const int MIN_POOL_PEER_PROTO_VERSION = 61402; 
+static const int MIN_POOL_PEER_PROTO_VERSION = 61402;
 
 static const int MIN_INSTANTX_PROTO_VERSION = 61402;
 
