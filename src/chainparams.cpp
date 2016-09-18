@@ -71,7 +71,7 @@ public:
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
         genesis.nTime    = 1465182929;
-        genesis.nBits    = bnProofOfWorkLimit.GetCompact(); 
+        genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 213507;
 
         hashGenesisBlock = genesis.GetHash();
@@ -79,7 +79,6 @@ public:
         assert(hashGenesisBlock == uint256("0x000007156509515339b8d7ba056ca7c448a3c2be2eade1bc80440b3b4350bab5"));
         assert(genesis.hashMerkleRoot == uint256("0x5e0da22e4c99ae49acabe6ca26cee59b3192787bc71cc3c4c1ec1726c21d0db4"));
 
-        
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,33);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,137);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,161);
@@ -94,7 +93,7 @@ public:
         nPoolMaxTransactions = 3;
         //strSporkKey = "046f78dcf911fbd61910136f7f0f8d90578f68d0b3ac973b5040fb7afb501b5939f39b108b0569dca71488f5bbf498d92e4d1194f6f941307ffd95f75e76869f0e";
         //strMasternodePaymentsPubKey = "046f78dcf911fbd61910136f7f0f8d90578f68d0b3ac973b5040fb7afb501b5939f39b108b0569dca71488f5bbf498d92e4d1194f6f941307ffd95f75e76869f0e";
-        strDarksendPoolDummyAddress = "TcYM6qFTC9i1CHb4GoHTQchF7Z2Qru73gv";
+        strDarksendPoolDummyAddress = "EV3pnsexEyBtNUMut8dV1KRNfHtJf6YbmR";
         nLastPOWBlock = 6000;
         nPOSStartBlock = 3001;
     }
