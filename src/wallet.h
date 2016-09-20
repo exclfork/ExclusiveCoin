@@ -129,6 +129,8 @@ public:
 
     bool SelectCoinsCollateral(std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet) const ;
     bool GetTransaction(const uint256 &hashTx, CWalletTx& wtx);
+    bool GetStakeWeightFromValue(const int64_t& nTime, const int64_t& nValue, uint64_t& nWeight);
+
 
     bool fFileBacked;
     bool fWalletUnlockAnonymizeOnly;
