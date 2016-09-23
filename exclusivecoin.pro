@@ -542,10 +542,12 @@ isEmpty(BOOST_INCLUDE_PATH) {
 
 isEmpty(QRENCODE_LIB_PATH) {
     macx:QRENCODE_LIB_PATH = /usr/local/lib
+	windows:QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs	
 }
 
 isEmpty(QRENCODE_INCLUDE_PATH) {
     macx:QRENCODE_INCLUDE_PATH = /usr/local/include
+	windows:QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4/
 }
 
 isEmpty(MINIUPNPC_LIB_SUFFIX) {
