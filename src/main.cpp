@@ -4006,19 +4006,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CTxDB txdb("r");
 
         if(strCommand == "tx") {
-            CInv inv(MSG_TX, tx.GetHash());
-            // Check for recently rejected (and do other quick existence checks)
-            if (AlreadyHave(txdb, inv))
-                return true;
+          vRecv >> tx;
+          inv = CInv(MSG_TX, tx.GetHash());
 
-            vRecv >> tx;
+          // Check for recently rejected (and do other quick existence checks)
+          if (AlreadyHave(txdb, inv))
+	  	return true;
+
         } else if (strCommand == "dstx") {
-            CInv inv(MSG_DSTX, tx.GetHash());
+    	    vRecv >> tx >> vin >> vchSig >> sigTime;
+	    inv = CInv(MSG_DSTX, tx.GetHash());
             // Check for recently rejected (and do other quick existence checks)
             if (AlreadyHave(txdb, inv))
                 return true;
             //these allow masternodes to publish a limited amount of free transactions
-            vRecv >> tx >> vin >> vchSig >> sigTime;
 
             CMasternode* pmn = mnodeman.Find(vin);
             if(pmn != NULL)
@@ -4052,7 +4053,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
                     mapDarksendBroadcastTxes.insert(make_pair(tx.GetHash(), dstx));
                 }
-            }
+	    }
         }
 
 
@@ -4121,7 +4122,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 LogPrint("mempool", "mapOrphan overflow, removed %u tx\n", nEvicted);
         }
         if(strCommand == "dstx"){
-            CInv inv(MSG_DSTX, tx.GetHash());
+	    inv = CInv(MSG_DSTX, tx.GetHash());
             RelayInventory(inv);
         }
         if (tx.nDoS) Misbehaving(pfrom->GetId(), tx.nDoS);
@@ -4174,8 +4175,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         std::vector<uint256> vtxid;
         mempool.queryHashes(vtxid);
         vector<CInv> vInv;
+	CInv inv;
         for (unsigned int i = 0; i < vtxid.size(); i++) {
-            CInv inv(MSG_TX, vtxid[i]);
+            inv = CInv(MSG_TX, vtxid[i]);
             vInv.push_back(inv);
             if (i == (MAX_INV_SZ - 1))
                     break;
