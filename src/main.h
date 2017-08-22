@@ -71,6 +71,9 @@ static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 128;
 /** Timeout in seconds before considering a block download peer unresponsive. */
 static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
 
+/** Combine thresholds for staking */
+static const int64_t DEF_COMBINE_AMOUNT = 25 * COIN; 
+static const int64_t MAX_COMBINE_AMOUNT = 1000 * COIN;
 
 static const int64_t DRIFT = 600;
 inline int64_t FutureDrift(int64_t nTime) { return nTime + DRIFT; }
@@ -79,6 +82,8 @@ inline int64_t FutureDrift(int64_t nTime) { return nTime + DRIFT; }
 static const unsigned char REJECT_INVALID = 0x10;
 
 inline int64_t GetMNCollateral(int nHeight) { return 5000; }
+
+extern int64_t GetStakeCombineThreshold;
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

@@ -49,6 +49,7 @@ Value getinfo(const Array& params, bool fHelp)
             obj.push_back(Pair("darksend_balance", ValueFromAmount(pwalletMain->GetAnonymizedBalance())));
         obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
         obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
+        obj.push_back(Pair("combine threshold",   ValueFromAmount(GetStakeCombineThreshold)));
     }
 #endif
     obj.push_back(Pair("blocks",        (int)nBestHeight));

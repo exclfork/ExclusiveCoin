@@ -265,6 +265,7 @@ std::string HelpMessage()
     strUsage += "  -createwalletbackups=<n> " + _("Number of automatic wallet backups (default: 10)") + "\n";
     strUsage += "  -keypool=<n>           " + _("Set key pool size to <n> (default: 1000) (litemode: 100)") + "\n";
     strUsage += "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n";
+    strUsage += "  -combinethreshold      " + _("Set stake combine threshold up to 1000 (default: 25)") + "\n";
     strUsage += "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + "\n";
     strUsage += "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 500, 0 = all)") + "\n";
     strUsage += "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n";
@@ -507,6 +508,18 @@ bool AppInit2(boost::thread_group& threadGroup)
             return InitError(strprintf(_("Invalid amount for -mininput=<amount>: '%s'"), mapArgs["-mininput"]));
     }
 #endif
+
+    if (mapArgs.count("-combinethreshold"))
+    {
+       if (!ParseMoney(mapArgs["-combinethreshold"], GetStakeCombineThreshold))
+           return InitError(strprintf(_("Invalid amount for -combinethreshold=<amount>: '%s'"), mapArgs["-combinethreshold"].c_str()));
+       else {
+           if (GetStakeCombineThreshold > MAX_COMBINE_AMOUNT)
+               GetStakeCombineThreshold = MAX_COMBINE_AMOUNT;
+       }
+//       fprintf("combinethreshold set to %"PRI64d"\n",GetStakeCombineThreshold);
+    }
+    
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
