@@ -83,7 +83,7 @@ static const unsigned char REJECT_INVALID = 0x10;
 
 inline int64_t GetMNCollateral(int nHeight) { return 5000; }
 
-extern int64_t GetStakeCombineThreshold;
+extern int64_t stakeCombineThreshold;
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

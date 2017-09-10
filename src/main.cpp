@@ -65,7 +65,7 @@ bool fReindex = false;
 bool fAddrIndex = false;
 bool fHaveGUI = false;
 
-int64_t GetStakeCombineThreshold = DEF_COMBINE_AMOUNT;
+int64_t stakeCombineThreshold = DEF_COMBINE_AMOUNT;
 
 
 struct COrphanBlock {
