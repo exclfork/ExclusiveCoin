@@ -32,8 +32,9 @@ int64_t nTransactionFee = MIN_TX_FEE;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
-static int64_t GetStakeCombineThreshold() { return 20 * COIN; }
-static int64_t GetStakeSplitThreshold() { return 2 * GetStakeCombineThreshold(); }
+//static int64_t stakeCombineThreshold() { return 20 * COIN; }
+extern int64_t stakeCombineThreshold;
+static int64_t GetStakeSplitThreshold() { return 2 * stakeCombineThreshold; }
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -3484,13 +3485,13 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (txNew.vin.size() >= 100)
                 break;
             // Stop adding more inputs if value is already pretty significant
-            if (nCredit >= GetStakeCombineThreshold())
+            if (nCredit >= stakeCombineThreshold)
                 break;
             // Stop adding inputs if reached reserve limit
             if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
                 break;
             // Do not add additional significant input
-            if (pcoin.first->vout[pcoin.second].nValue >= GetStakeCombineThreshold())
+            if (pcoin.first->vout[pcoin.second].nValue >= stakeCombineThreshold)
                 continue;
             // Do not add input that is still too young
             if (nTimeWeight < nStakeMinAge)

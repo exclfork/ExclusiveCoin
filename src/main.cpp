@@ -65,6 +65,8 @@ bool fReindex = false;
 bool fAddrIndex = false;
 bool fHaveGUI = false;
 
+int64_t stakeCombineThreshold = DEF_COMBINE_AMOUNT;
+
 
 struct COrphanBlock {
     uint256 hashBlock;

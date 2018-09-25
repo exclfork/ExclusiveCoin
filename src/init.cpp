@@ -265,6 +265,7 @@ std::string HelpMessage()
     strUsage += "  -createwalletbackups=<n> " + _("Number of automatic wallet backups (default: 10)") + "\n";
     strUsage += "  -keypool=<n>           " + _("Set key pool size to <n> (default: 1000) (litemode: 100)") + "\n";
     strUsage += "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n";
+    strUsage += "  -staketargetsize      " + _("Set lower target threshold for staking input size. Available inputs will split or combine to a target size between your value and twice that value. Maximum: 1000 (default: 25, this will create a target size between 25-50 coins)") + "\n";
     strUsage += "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + "\n";
     strUsage += "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 500, 0 = all)") + "\n";
     strUsage += "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n";
@@ -507,6 +508,18 @@ bool AppInit2(boost::thread_group& threadGroup)
             return InitError(strprintf(_("Invalid amount for -mininput=<amount>: '%s'"), mapArgs["-mininput"]));
     }
 #endif
+
+    if (mapArgs.count("-staketargetsize"))
+    {
+       if (!ParseMoney(mapArgs["-staketargetsize"], stakeCombineThreshold))
+           return InitError(strprintf(_("Invalid amount for -staketargetsize=<amount>: '%s'"), mapArgs["-staketargetsize"].c_str()));
+       else {
+           if (stakeCombineThreshold > MAX_COMBINE_AMOUNT)
+               stakeCombineThreshold = MAX_COMBINE_AMOUNT;
+       }
+//       fprintf("staketargetsize set to %"PRI64d"\n",staketargetsize);
+    }
+    
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
