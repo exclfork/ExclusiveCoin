@@ -27,6 +27,8 @@ static const int64_t DARKSEND_POOL_MAX = (4999.99*COIN);
 static const int64_t STATIC_POS_REWARD = 1 * COIN; //Constant reward of 1 EXCL per COIN i.e. 8%
 static const int64_t TARGET_SPACING = 60;
 
+static const int64_t HARD_FORK_DIFF_FIX = 9999999; //fix difficulty issues with 0 or -ve times between blocks
+
 #define INSTANTX_SIGNATURES_REQUIRED           10
 #define INSTANTX_SIGNATURES_TOTAL              15
 
