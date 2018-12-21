@@ -31,24 +31,24 @@ static const int DATABASE_VERSION = 70509;
 //
 // 61403 introduces updated net code which fixes several bugs/issues
 // 61404 fixes broadcasting/relaying tx's
-static const int PROTOCOL_VERSION = 61404;
+static const int PROTOCOL_VERSION = 61405;
 
 // intial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
 
 // disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 61402;
+static const int MIN_PEER_PROTO_VERSION = 61405;
 
 // minimum peer version accepted by DarkSendPool
-static const int MIN_POOL_PEER_PROTO_VERSION = 61402;
+static const int MIN_POOL_PEER_PROTO_VERSION = 61405;
 
-static const int MIN_INSTANTX_PROTO_VERSION = 61402;
+static const int MIN_INSTANTX_PROTO_VERSION = 61405;
 
 //! minimum peer version that can receive masternode payments
 // V1 - Last protocol version before update
 // V2 - Newest protocol version
-static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION_1 = 61402;
-static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION_2 = 61402;
+static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION_1 = 61405;
+static const int MIN_MASTERNODE_PAYMENT_PROTO_VERSION_2 = 61405;
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this

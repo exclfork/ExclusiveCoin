@@ -1526,36 +1526,45 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
-    //if(pindexBest->nHeight >= HARD_FORK_BLOCK){
-        if (nActualSpacing < 0){
-            nActualSpacing = TARGET_SPACING;
+	//fork to prevent 0 or -ve time values
+    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
+    {
+        if (nActualSpacing < 0)
+        {
+            nActualSpacing = 1;
         }
-        if(nActualSpacing > TARGET_SPACING * 10){
-            nActualSpacing = TARGET_SPACING * 10;
-        }
-/*
-    } else if(pindexBest->nHeight < HARD_FORK_BLOCK) {
-        if (nActualSpacing < 0){
+    }
+    else 
+    {
+        if (nActualSpacing < 0)
+        {
             nActualSpacing = TARGET_SPACING;
         }
     }
-*/
+    
+    if (nActualSpacing > TARGET_SPACING * 10){
+    	nActualSpacing = TARGET_SPACING * 10;}
+
 
     // ppcoin: target change every block
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
-    //if(pindexBest->nHeight >= HARD_FORK_BLOCK){
-        int64_t nInterval = nTargetTimespan / TARGET_SPACING;
-        bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        bnNew /= ((nInterval + 1) * TARGET_SPACING);
-/*
-    } else {
-        int64_t nInterval = nTargetTimespan / TARGET_SPACING;
-        bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        bnNew /= ((nInterval + 1) * TARGET_SPACING);
-    }
-*/
+
+    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
+    	{
+    	//nTargetTimespan = 20 minutes
+        	int64_t nInterval = 2 * nTargetTimespan / TARGET_SPACING;
+        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
+        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
+    	}
+    else 
+    	{
+    	//nTargetTimespan = 10 minutes
+        	int64_t nInterval = nTargetTimespan / TARGET_SPACING;
+        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
+        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
+    	}
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
