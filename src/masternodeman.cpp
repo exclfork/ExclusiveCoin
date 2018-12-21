@@ -619,6 +619,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         bool isIPV4 = addr.IsIPv4() && IsReachable(addr) && addr.IsRoutable();
+        if (addr.IsRFC1918() || addr.IsLocal()){
+            LogPrintf("dsee - Local address detected %s\n", addr.ToString().c_str());
+            return;
+        }        
         //if(RegTest()) isLocal = false;
 
         std::string vchPubKey(pubkey.begin(), pubkey.end());
