@@ -345,16 +345,14 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
         return false;
 
-/*
-    if(pindexBest->nHeight < HARD_FORK_BLOCK){
-        if (block.GetBlockTime() + nStakeMinAge > nTime)
-            return false; // only count coins meeting min age requirement
+    int nDepth;
+    if(pindexBest->nHeight > HARD_FORK_DIFF_FIX_2){
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations_2 - 1, nDepth))
+            return false;
     } else {
-*/
-        int nDepth;
         if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
             return false;
-    //}
+    }
 
     if (pBlockTime)
         *pBlockTime = block.GetBlockTime();

@@ -2481,13 +2481,23 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64
             return false;  // Transaction timestamp violation
 
         int nSpendDepth;
-
-        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+	    if(pindexBest->nHeight > HARD_FORK_DIFF_FIX_2)
         {
-            LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
-            continue; // only count coins meeting min confirmations requirement
-        }
-
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations_2 - 1, nSpendDepth))
+        	{
+            	LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
+            	continue; // only count coins meeting min confirmations requirement
+        	}
+		}
+		else
+		{
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+        	{
+            	LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
+            	continue; // only count coins meeting min confirmations requirement
+        	}
+		}
+		
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
         bnCentSecond += CBigNum(nValueIn) * (nTime-txPrev.nTime) / CENT;
 
