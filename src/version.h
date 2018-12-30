@@ -31,7 +31,7 @@ static const int DATABASE_VERSION = 70509;
 //
 // 61403 introduces updated net code which fixes several bugs/issues
 // 61404 fixes broadcasting/relaying tx's
-static const int PROTOCOL_VERSION = 61405;
+static const int PROTOCOL_VERSION = 61406;
 
 // intial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
