@@ -1528,19 +1528,18 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
-	//fork to prevent 0 or -ve time values
-    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
-    {
-        if (nActualSpacing < 0)
-        {
-            nActualSpacing = 1;
-        }
-    }
-    else 
-    {
-        if (nActualSpacing < 0)
+	//fork 1 converts -ve time blocks to 1
+	//fork 2 allows -ve time block differences. nActualSpacing = nActualSpacing
+	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
+    {	if (nActualSpacing < 0)
         {
             nActualSpacing = TARGET_SPACING;
+        }
+    }
+	else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX && pindexBest->nHeight < HARD_FORK_DIFF_FIX_2)
+    {	if (nActualSpacing < 0)
+        {
+            nActualSpacing = 1;
         }
     }
     
@@ -1552,21 +1551,23 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
+	//nTargetTimespan = 10 minutes
+    if(pindexBest->nHeight < HARD_FORK_DIFF_FIX)
+		{
+	    int64_t nInterval = nTargetTimespan / TARGET_SPACING;
+	    }
+	//nTargetTimespan = 20 minutes
+    else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX && pindexBest->nHeight < HARD_FORK_DIFF_FIX_2)
+    	{
+        int64_t nInterval = 2 * nTargetTimespan / TARGET_SPACING;
+    	}
+    else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX_2) //nTargetTimespan = 60 minutes
+    	{
+        int64_t nInterval = 6 * nTargetTimespan / TARGET_SPACING;
+    	}
 
-    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
-    	{
-    	//nTargetTimespan = 20 minutes
-        	int64_t nInterval = 2 * nTargetTimespan / TARGET_SPACING;
-        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
-    	}
-    else 
-    	{
-    	//nTargetTimespan = 10 minutes
-        	int64_t nInterval = nTargetTimespan / TARGET_SPACING;
-        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
-    	}
+    bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
+	bnNew /= ((nInterval + 1) * TARGET_SPACING);
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
