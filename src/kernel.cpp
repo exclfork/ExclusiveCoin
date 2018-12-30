@@ -310,7 +310,6 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
     int nDepth;
 
     //if(pindexBest->nHeight >= HARD_FORK_BLOCK){
-        nStakeMinConfirmations = 500;
         if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
             return tx.DoS(100, error("CheckProofOfStake() : tried to stake at depth %d", nDepth + 1));
 /*
@@ -353,8 +352,6 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     } else {
 */
         int nDepth;
-
-        int nStakeMinConfirmations = 500;
         if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
             return false;
     //}
