@@ -1551,19 +1551,20 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
+    int64_t nInterval;
 	//nTargetTimespan = 10 minutes
     if(pindexBest->nHeight < HARD_FORK_DIFF_FIX)
-		{
-	    int64_t nInterval = nTargetTimespan / TARGET_SPACING;
-	    }
+	{
+	nInterval = nTargetTimespan / TARGET_SPACING;
+	}
 	//nTargetTimespan = 20 minutes
     else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX && pindexBest->nHeight < HARD_FORK_DIFF_FIX_2)
     	{
-        int64_t nInterval = 2 * nTargetTimespan / TARGET_SPACING;
+        nInterval = 2 * nTargetTimespan / TARGET_SPACING;
     	}
     else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX_2) //nTargetTimespan = 60 minutes
     	{
-        int64_t nInterval = 6 * nTargetTimespan / TARGET_SPACING;
+        nInterval = 6 * nTargetTimespan / TARGET_SPACING;
     	}
 
     bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
