@@ -51,6 +51,8 @@ unsigned int nStakeMinAge = 24 * 60 * 60; // 24 hours
 unsigned int nModifierInterval = 2 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 40;
+int nStakeMinConfirmations = 500;
+int nStakeMinConfirmations_2 = 1440;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 
@@ -1526,19 +1528,18 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
 
-	//fork to prevent 0 or -ve time values
-    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
-    {
-        if (nActualSpacing < 0)
-        {
-            nActualSpacing = 1;
-        }
-    }
-    else 
-    {
-        if (nActualSpacing < 0)
+	//fork 1 converts -ve time blocks to 1
+	//fork 2 allows -ve time block differences. nActualSpacing = nActualSpacing
+	if(pindexBest->nHeight < HARD_FORK_DIFF_FIX )
+    {	if (nActualSpacing < 0)
         {
             nActualSpacing = TARGET_SPACING;
+        }
+    }
+	else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX && pindexBest->nHeight < HARD_FORK_DIFF_FIX_2)
+    {	if (nActualSpacing < 0)
+        {
+            nActualSpacing = 1;
         }
     }
     
@@ -1550,21 +1551,24 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
+    int64_t nInterval;
+	//nTargetTimespan = 10 minutes
+    if(pindexBest->nHeight < HARD_FORK_DIFF_FIX)
+	{
+	nInterval = nTargetTimespan / TARGET_SPACING;
+	}
+	//nTargetTimespan = 20 minutes
+    else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX && pindexBest->nHeight < HARD_FORK_DIFF_FIX_2)
+    	{
+        nInterval = 2 * nTargetTimespan / TARGET_SPACING;
+    	}
+    else if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX_2) //nTargetTimespan = 60 minutes
+    	{
+        nInterval = 6 * nTargetTimespan / TARGET_SPACING;
+    	}
 
-    if(pindexBest->nHeight >= HARD_FORK_DIFF_FIX)
-    	{
-    	//nTargetTimespan = 20 minutes
-        	int64_t nInterval = 2 * nTargetTimespan / TARGET_SPACING;
-        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
-    	}
-    else 
-    	{
-    	//nTargetTimespan = 10 minutes
-        	int64_t nInterval = nTargetTimespan / TARGET_SPACING;
-        	bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
-        	bnNew /= ((nInterval + 1) * TARGET_SPACING);
-    	}
+    bnNew *= ((nInterval - 1) * TARGET_SPACING + nActualSpacing + nActualSpacing);
+	bnNew /= ((nInterval + 1) * TARGET_SPACING);
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
         bnNew = bnTargetLimit;
@@ -2464,7 +2468,6 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64
 {
     CBigNum bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
-    int nStakeMinConfirmations = 500;
 
     if (IsCoinBase())
         return true;
@@ -2480,13 +2483,23 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64
             return false;  // Transaction timestamp violation
 
         int nSpendDepth;
-
-        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+	    if(pindexBest->nHeight > HARD_FORK_DIFF_FIX_2)
         {
-            LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
-            continue; // only count coins meeting min confirmations requirement
-        }
-
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations_2 - 1, nSpendDepth))
+        	{
+            	LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
+            	continue; // only count coins meeting min confirmations requirement
+        	}
+		}
+		else
+		{
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+        	{
+            	LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
+            	continue; // only count coins meeting min confirmations requirement
+        	}
+		}
+		
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
         bnCentSecond += CBigNum(nValueIn) * (nTime-txPrev.nTime) / CENT;
 
@@ -3692,7 +3705,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
+        if (pfrom->nVersion < (pindexBest->nHeight < HARD_FORK_DIFF_FIX_2 ? MIN_PEER_PROTO_VERSION : MIN_PEER_PROTO_VERSION_FORK))
+//        if (pfrom->nVersion < ActiveProtocol())
         {
             // disconnect from peers older than this proto version
             LogPrintf("partner %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);

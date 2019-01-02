@@ -28,6 +28,7 @@ static const int64_t STATIC_POS_REWARD = 1 * COIN; //Constant reward of 1 EXCL p
 static const int64_t TARGET_SPACING = 60;
 
 static const int64_t HARD_FORK_DIFF_FIX = 1705800; //fix difficulty issues with 0 or -ve times between blocks
+static const int64_t HARD_FORK_DIFF_FIX_2 = 1736000; //fix difficulty issues with 0 or -ve times between blocks and ensure 1440 block minstakeage
 
 #define INSTANTX_SIGNATURES_REQUIRED           10
 #define INSTANTX_SIGNATURES_TOTAL              15
@@ -94,6 +95,7 @@ extern std::map<uint256, CBlockIndex*> mapBlockIndex;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 extern CBlockIndex* pindexGenesisBlock;
 extern int nStakeMinConfirmations;
+extern int nStakeMinConfirmations_2;
 extern unsigned int nStakeMinAge;
 extern unsigned int nNodeLifespan;
 extern int nCoinbaseMaturity;
