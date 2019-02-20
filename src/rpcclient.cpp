@@ -122,6 +122,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getblockbynumber", 1 },
     { "getblockhash", 0 },
     { "cclistcoins", 0 },
+    { "lockunspent", 0 },
+    { "lockunspent", 1 },
     { "move", 2 },
     { "move", 3 },
     { "sendfrom", 2 },
